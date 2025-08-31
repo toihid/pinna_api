@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const PhotoSchema = new mongoose.Schema(
+const PlaceSchema = new mongoose.Schema(
   {
     filename: { type: String, default: "photo" },
     image: { type: String, required: true }, // base64 string
@@ -12,4 +12,4 @@ const PhotoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Photo", PhotoSchema);
+export default mongoose.model("Place", PlaceSchema);
