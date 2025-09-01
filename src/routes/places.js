@@ -7,9 +7,12 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     //const photos = await Photo.find().sort({ createdAt: -1 });
-    const photos = await Place.find({}, "_id title description lat lng")
+    const photos = await Place.find(
+      {},
+      "_id title description lat lng image filename"
+    )
       .sort({ createdAt: -1 }) // newest first
-      .limit(4) // last 4 images
+      .limit(20) // last 20 places
       .allowDiskUse(true); // required for large documents in Atlas
 
     // Map to rename fields
@@ -17,7 +20,8 @@ router.get("/", async (req, res) => {
       id: p._id,
       title: p.title,
       description: p.description,
-      url: p.url,
+      image: p.image,
+      filename: p.filename,
       latitude: p.lat, // rename lat -> latitude
       longitude: p.lng, // rename lng -> longitude
       createdAt: p.createdAt,

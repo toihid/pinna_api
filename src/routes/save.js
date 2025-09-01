@@ -1,23 +1,42 @@
 import express from "express";
+import multer from "multer";
+import path from "path";
 import Place from "../models/Place.js";
+
 const router = express.Router();
 
-// POST /upload
-router.post("/", async (req, res) => {
-  try {
-    console.log(req.body);
-    const { image, filename, title, description, lat, lng } = req.body;
+// Set storage for Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // folder to save images
+  },
+  filename: (req, file, cb) => {
+    const sanitized = file.originalname.replace(/\s/g, "-"); // replace spaces
+    const finalName = `${Date.now()}-${sanitized}`; // append timestamp
+    cb(null, finalName);
+  },
+});
 
-    if (!image) return res.status(400).json({ error: "No image provided" });
+const upload = multer({ storage });
+
+// POST /save
+router.post("/", upload.single("image"), async (req, res) => {
+  try {
+    const { title, description, lat, lng } = req.body;
+
+    if (!req.file || !title || !description || !lat || !lng) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
     const newPlace = new Place({
-      image,
-      filename,
+      filename: req.file.filename,
+      image: req.file.path.replace(/\\/g, "/"),
       title,
       description,
-      lat,
-      lng,
+      lat: parseFloat(lat),
+      lng: parseFloat(lng),
     });
+
     const savedPlace = await newPlace.save();
 
     res.json({

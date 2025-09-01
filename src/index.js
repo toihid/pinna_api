@@ -6,11 +6,17 @@ import saveRouter from "./routes/save.js";
 import uploadGridFsRouter from "./routes/upload-gridfs.js";
 import placesRouter from "./routes/places.js";
 
+import path from "path";
+import fs from "fs";
+
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "20mb" }));
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(path.join(path.resolve(), "uploads"))); // serve uploaded files
 
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
